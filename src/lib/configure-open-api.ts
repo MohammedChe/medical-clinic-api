@@ -18,6 +18,12 @@ export default function configureOpenAPI(app: AppOpenAPI) {
   });
 
   app.get("/reference", apiReference({
+    theme: "kepler",
+    layout: "classic",
+    defaultHttpClient: {
+      targetKey: "javascript",
+      clientKey: "axios",
+    },
     spec: {
       url: "/doc", // this just needs to point to where your documentation lives
     },
