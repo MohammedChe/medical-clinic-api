@@ -1,6 +1,7 @@
+import { apiReference } from "@scalar/hono-api-reference";
+
 // The type of app is to be the same type we use to instantitate the app in create-app.ts.
 // This was originally only in create-app
-
 import type { AppOpenAPI } from "./types";
 
 import packageJSON from "../../package.json";
@@ -15,4 +16,10 @@ export default function configureOpenAPI(app: AppOpenAPI) {
       description: "Medical Clinic API",
     },
   });
+
+  app.get("/reference", apiReference({
+    spec: {
+      url: "/doc", // this just needs to point to where your documentation lives
+    },
+  }));
 }
