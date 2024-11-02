@@ -9,7 +9,7 @@ import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 
 import type { AppBindings } from "./types";
 
-export function createApp() {
+export default function createApp() {
   // OpenAPIHono is just a wrapper around Hono that adds OpenAPI support
   // The app still works in exactly the same way as using Hono directly
   const app = new OpenAPIHono<AppBindings>({ strict: false }); // disabling this to avoid differentiating between, e.g. '/user' and '/user/'
@@ -44,4 +44,8 @@ export function createApp() {
   app.onError(onError);
 
   return app;
+}
+
+export function createRouter() {
+  return new OpenAPIHono<AppBindings>({ strict: false });
 }

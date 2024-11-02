@@ -3,7 +3,7 @@
 
 import type { AppOpenAPI } from "./types";
 
-import packageJSON from "../package.json";
+import packageJSON from "../../package.json";
 
 // We want to reuse it, so we've moved it to types.ts
 export default function configureOpenAPI(app: AppOpenAPI) {
