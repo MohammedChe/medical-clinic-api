@@ -10,7 +10,7 @@ import pretty from "pino-pretty";
 import env from "../env";
 
 // Stoker provides some useful middlewares, like notFound
-import { notFound, onError } from "stoker/middlewares";
+import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 
 // Without this interface, if we tried to access c.logger.info() or whatever other method, we'd get a type error
 // Because hono doesn't know about the logger
@@ -34,6 +34,9 @@ app.notFound(notFound);
 // If node env is not set to production, this middleware will show the stack trace
 // If we forget to do our own error handling, this will catch it
 app.onError(onError);
+
+// This is a small middleware offered by stoker to prevent 404s when the browser requests a favicon
+app.use(serveEmojiFavicon("🏥")); // hospital emoji
 
 // Receives the instance of pino, which is a logger
 // We then provide it with a pretty formatter
