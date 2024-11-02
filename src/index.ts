@@ -2,10 +2,11 @@
 // Means if we decide to change the server from nodejs to whatever else, we only need to change this file
 // And import the same app from src/app.ts
 import { serve } from "@hono/node-server";
+import env from "env";
 
 import app from "./app";
 
-const port = 3000;
+const port = env.PORT;
 
 // eslint-disable-next-line no-console
 console.log(`Server is running on http://localhost:${port}`);
