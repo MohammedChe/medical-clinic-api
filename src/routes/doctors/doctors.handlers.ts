@@ -7,7 +7,7 @@ import type { AppRouteHandler } from "@/lib/types";
 import db from "@/db";
 import { doctors } from "@/db/schema";
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute } from "./doctors.routes";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./doctors.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const doctors = await db.query.doctors.findMany();
@@ -72,4 +72,18 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
   }
 
   return c.json(doctor, HTTPStatusCodes.OK);
+};
+
+export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+
+  // Not using returning here, because there will be no rows to return
+  const result = await db.delete(doctors)
+    .where(eq(doctors.id, id));
+
+  if (result.rowsAffected === 0) {
+    return c.json({ message: HTTPStatusPhrases.NOT_FOUND }, HTTPStatusCodes.NOT_FOUND);
+  }
+
+  return c.body(null, HTTPStatusCodes.NO_CONTENT);
 };

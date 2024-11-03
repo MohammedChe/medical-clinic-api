@@ -109,7 +109,31 @@ export const patch = createRoute({
   },
 });
 
+export const remove = createRoute({
+  tags,
+  path: "/doctors/{id}",
+  method: "delete",
+  request: {
+    params: IdParamsSchema,
+  },
+  responses: {
+    [HTTPStatusCodes.NO_CONTENT]: {
+      description: "Doctor deleted",
+    },
+    // Only one possible cause of 422, bad ID
+    [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(IdParamsSchema),
+      "Invalid ID error",
+    ),
+    [HTTPStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Doctor not found",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
+export type RemoveRoute = typeof remove;
