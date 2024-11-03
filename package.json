@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "update-schemas": "pnpm drizzle-kit push"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.4",

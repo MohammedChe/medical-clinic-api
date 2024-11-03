@@ -12,9 +12,17 @@ const EnvSchema = z.object({
   LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
   DATABASE_URL: z.string().url(),
   DATABASE_AUTH_TOKEN: z.string().optional(),
-}).refine((input) => {
+}).superRefine((input, ctx) => {
+  // can use refine/superRefine to add additional validation not covered by zod
+  // superRefine is just a more powerful version of refine
   if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
-    throw new Error("DATABASE_AUTH_TOKEN must be provided in production");
+    ctx.addIssue({
+      code: z.ZodIssueCode.invalid_type,
+      expected: "string",
+      received: "undefined",
+      path: ["DATABASE_AUTH_TOKEN"],
+      message: "Must be set when NODE_ENV is 'production'",
+    });
   }
   return input;
 });

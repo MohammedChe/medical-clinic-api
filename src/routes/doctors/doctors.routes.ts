@@ -17,6 +17,7 @@ export const doctors = createRoute({
         last_name: z.string(),
         email: z.string(),
         phone: z.string(),
+        specialisation: z.string(),
       })),
       "List of doctors",
     ),
