@@ -1,3 +1,5 @@
+import * as HTTPStatusCodes from "stoker/http-status-codes";
+
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
@@ -23,5 +25,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
   // The returning method will return the inserted row with the id, createdAt and updatedAt
   const [inserted] = await db.insert(doctors).values(doctor).returning();
 
-  return c.json(inserted);
+  // Need to explicitly set the response code to 200
+  // The schema expects it
+  return c.json(inserted, HTTPStatusCodes.OK);
 };

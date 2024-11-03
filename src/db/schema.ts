@@ -17,7 +17,9 @@ export const doctors = sqliteTable("doctors", {
       "General Practitioner",
     ],
   }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
+    () => new Date(),
+  ),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .$defaultFn(() => new Date())
     .$onUpdate(() => new Date()),
@@ -28,9 +30,14 @@ export const doctors = sqliteTable("doctors", {
 export const selectDoctorsSchema = createSelectSchema(doctors);
 
 // We can further refine this using the omit method from zod to specify not to include id, createdAt and updatedAt
-export const insertDoctorsSchema = createInsertSchema(doctors)
-  .omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-  });
+export const insertDoctorsSchema = createInsertSchema(doctors, {
+  first_name: schema => schema.first_name.min(2).max(255),
+  last_name: schema => schema.last_name.min(2).max(255),
+  email: schema => schema.email.email(),
+  phone: schema => schema.phone.min(10).max(10),
+  specialisation: schema => schema.specialisation,
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
