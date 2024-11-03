@@ -1,11 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import * as HTTPStatusCodes from "stoker/http-status-codes";
-import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
+import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
 // This file is home to the openapi zod schemas for the tasks routes
 // Not the actual implementation of the routes
-import { insertDoctorsSchema, selectDoctorsSchema } from "@/db/schema";
+import { insertDoctorsSchema, patchDoctorsSchema, selectDoctorsSchema } from "@/db/schema";
 import { notFoundSchema } from "@/lib/constants";
 
 const tags = ["doctors"];
@@ -76,6 +76,40 @@ export const getOne = createRoute({
   },
 });
 
+export const patch = createRoute({
+  tags,
+  path: "/doctors/{id}",
+  method: "patch",
+  request: {
+    // Validation here is a combination of both the ID passed in the query params, and the body
+    // So first, is it a valid ID? If so, is the body valid?
+    params: IdParamsSchema,
+    body: jsonContentRequired(
+      // Using a patch-specific schema, because all fields are optional in a patch
+      patchDoctorsSchema,
+      "The doctor updates to apply",
+    ),
+  },
+  responses: {
+    [HTTPStatusCodes.OK]: jsonContent(
+      selectDoctorsSchema,
+      "The updated doctor",
+    ),
+    // So in this case, there could be a 422 stemming from either the ID or the body
+    // It seems this would be quite tricky to implement by hand
+    // Stoker provides a helper, jsonContentOneOf, to make this easier
+    [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf([
+      createErrorSchema(patchDoctorsSchema),
+      createErrorSchema(IdParamsSchema),
+    ], "The validation error(s)"),
+    [HTTPStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Doctor not found",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
+export type PatchRoute = typeof patch;

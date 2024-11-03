@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import * as HTTPStatusCodes from "stoker/http-status-codes";
 import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
@@ -6,7 +7,7 @@ import type { AppRouteHandler } from "@/lib/types";
 import db from "@/db";
 import { doctors } from "@/db/schema";
 
-import type { CreateRoute, GetOneRoute, ListRoute } from "./doctors.routes";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute } from "./doctors.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const doctors = await db.query.doctors.findMany();
@@ -49,6 +50,22 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
       return operators.eq(fields.id, id);
     },
   });
+
+  if (!doctor) {
+    return c.json({ message: HTTPStatusPhrases.NOT_FOUND }, HTTPStatusCodes.NOT_FOUND);
+  }
+
+  return c.json(doctor, HTTPStatusCodes.OK);
+};
+
+export const patch: AppRouteHandler<PatchRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+  const updates = c.req.valid("json");
+
+  const [doctor] = await db.update(doctors)
+    .set(updates)
+    .where(eq(doctors.id, id))
+    .returning();
 
   if (!doctor) {
     return c.json({ message: HTTPStatusPhrases.NOT_FOUND }, HTTPStatusCodes.NOT_FOUND);

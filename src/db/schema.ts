@@ -41,3 +41,6 @@ export const insertDoctorsSchema = createInsertSchema(doctors, {
   createdAt: true,
   updatedAt: true,
 });
+
+// So this schema is the same as insert, except all fields are optional
+export const patchDoctorsSchema = insertDoctorsSchema.partial();
