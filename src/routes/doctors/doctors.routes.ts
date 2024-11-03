@@ -1,10 +1,10 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import * as HTTPStatusCodes from "stoker/http-status-codes";
-import { jsonContent } from "stoker/openapi/helpers";
+import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 
 // This file is home to the openapi zod schemas for the tasks routes
 // Not the actual implementation of the routes
-import { selectDoctorsSchema } from "@/db/schema";
+import { insertDoctorsSchema, selectDoctorsSchema } from "@/db/schema";
 
 const tags = ["doctors"];
 
@@ -15,6 +15,7 @@ export const list = createRoute({
   responses: {
     // drizzle-zod can create a zod schema for the select query automatically
     // we can use it here to make sure our response object definition matches what we've defined in the database
+    // means our API docs are completely in sync with our database schema!
     [HTTPStatusCodes.OK]: jsonContent(
       z.array(selectDoctorsSchema),
       "List of doctors",
@@ -22,4 +23,21 @@ export const list = createRoute({
   },
 });
 
+export const create = createRoute({
+  tags,
+  path: "/doctors",
+  method: "post",
+  request: {
+    body: jsonContentRequired(insertDoctorsSchema, "The doctor to create"),
+  },
+  responses: {
+    [HTTPStatusCodes.OK]: jsonContent(
+      selectDoctorsSchema,
+      "The created doctor",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
+
+export type CreateRoute = typeof create;

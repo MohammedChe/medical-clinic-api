@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createSelectSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const doctors = sqliteTable("doctors", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -26,3 +26,11 @@ export const doctors = sqliteTable("doctors", {
 // Drizzle-zod can create a zod type schema for the select query
 // Means we can use this in our route definition and be sure that the query is correct
 export const selectDoctorsSchema = createSelectSchema(doctors);
+
+// We can further refine this using the omit method from zod to specify not to include id, createdAt and updatedAt
+export const insertDoctorsSchema = createInsertSchema(doctors)
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  });
