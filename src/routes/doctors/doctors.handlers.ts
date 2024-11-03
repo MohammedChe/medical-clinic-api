@@ -1,11 +1,12 @@
 import * as HTTPStatusCodes from "stoker/http-status-codes";
+import * as HTTPStatusPhrases from "stoker/http-status-phrases";
 
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
 import { doctors } from "@/db/schema";
 
-import type { CreateRoute, ListRoute } from "./doctors.routes";
+import type { CreateRoute, GetOneRoute, ListRoute } from "./doctors.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const doctors = await db.query.doctors.findMany();
@@ -28,4 +29,30 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
   // Need to explicitly set the response code to 200
   // The schema expects it
   return c.json(inserted, HTTPStatusCodes.OK);
+};
+
+// So this handles 422, 404, and 200 responses
+export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
+  // Just as before, the code will not make it here if the params include a valid id, which is a number
+  // We're both receiving and validating the id in one go
+  const { id } = c.req.valid("param");
+
+  // findFirst is a SQLite method provided by Drizzle (drizzle is just an ORM for SQLite, among other DBs)
+  const doctor = await db.query.doctors.findFirst({
+    // fields and operators are just things like:
+    // fields: { id: "id", name: "name" }
+    // operators: { eq: (a, b) => `${a} = ${b}` }
+    where(fields, operators) {
+      // so check that id field equals the id we passed in
+      // it'll be converted into SELECT * FROM doctors WHERE id = ${id} LIMIT 1
+      // and it'll return the first match
+      return operators.eq(fields.id, id);
+    },
+  });
+
+  if (!doctor) {
+    return c.json({ message: HTTPStatusPhrases.NOT_FOUND }, HTTPStatusCodes.NOT_FOUND);
+  }
+
+  return c.json(doctor, HTTPStatusCodes.OK);
 };
