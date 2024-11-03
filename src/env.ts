@@ -10,6 +10,13 @@ const EnvSchema = z.object({
   NODE_ENV: z.string().default("development"),
   PORT: z.coerce.number().default(9999),
   LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
+  DATABASE_URL: z.string().url(),
+  DATABASE_AUTH_TOKEN: z.string().optional(),
+}).refine((input) => {
+  if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
+    throw new Error("DATABASE_AUTH_TOKEN must be provided in production");
+  }
+  return input;
 });
 
 // z.infer pulls out the type from the schema. Built-in method from zod.

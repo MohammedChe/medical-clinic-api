@@ -4,7 +4,10 @@ import { createRoute, z } from "@hono/zod-openapi";
 import * as HTTPStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 
-const doctors = createRoute({
+const tags = ["doctors"];
+
+export const doctors = createRoute({
+  tags,
   path: "/doctors",
   method: "get",
   responses: {
