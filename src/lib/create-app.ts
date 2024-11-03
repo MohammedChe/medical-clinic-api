@@ -6,6 +6,7 @@ import pretty from "pino-pretty";
 
 // Stoker provides some useful middlewares, like notFound
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
+import defaultHook from "stoker/openapi/default-hook";
 
 import type { AppBindings } from "./types";
 
@@ -47,5 +48,11 @@ export default function createApp() {
 }
 
 export function createRouter() {
-  return new OpenAPIHono<AppBindings>({ strict: false });
+  return new OpenAPIHono<AppBindings>({
+    strict: false,
+    // this handles validation errors for every endpoint
+    // stoker just returns an object like:
+    // {success: false, error: <error message>, code: 422}
+    defaultHook,
+  });
 }

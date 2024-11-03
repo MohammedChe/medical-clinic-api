@@ -8,6 +8,7 @@ import packageJSON from "../../package.json";
 
 // We want to reuse it, so we've moved it to types.ts
 export default function configureOpenAPI(app: AppOpenAPI) {
+  // So this is just a JSON form of documentation
   app.doc("/doc", {
     openapi: "3.0.0",
     info: {
@@ -17,9 +18,11 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     },
   });
 
+  // This one is visual documentation
   app.get("/reference", apiReference({
     theme: "kepler",
     layout: "classic",
+    // Tell the API reference to use axios/js for the client, examples will follow axios/js
     defaultHttpClient: {
       targetKey: "javascript",
       clientKey: "axios",
