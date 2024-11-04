@@ -18,6 +18,29 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
   const appointment = c.req.valid("json");
 
+  const doctor_id = appointment.doctor_id;
+  const patient_id = appointment.patient_id;
+
+  const doctor = await db.query.doctors.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.id, doctor_id);
+    },
+  });
+
+  if (!doctor) {
+    return c.json({ message: `Doctor not found for id: ${doctor_id}` }, HTTPStatusCodes.BAD_REQUEST);
+  }
+
+  const patient = await db.query.patients.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.id, patient_id);
+    },
+  });
+
+  if (!patient) {
+    return c.json({ message: `Patient not found for id: ${patient_id}` }, HTTPStatusCodes.BAD_REQUEST);
+  }
+
   const [inserted] = await db.insert(appointments).values(appointment).returning();
 
   return c.json(inserted, HTTPStatusCodes.OK);

@@ -2,6 +2,8 @@ import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
+import { dateStringSchema } from "@/lib/date-string-schema";
+
 /// ///////////////////// DOCTORS //////////////////////
 
 export const doctors = sqliteTable("doctors", {
@@ -55,7 +57,8 @@ export const patients = sqliteTable("patients", {
   last_name: text("name").notNull(),
   email: text("email").unique().notNull(),
   phone: text("phone").unique().notNull(),
-  date_of_birth: integer("date_of_birth", { mode: "timestamp" }).notNull(), // sqlite does not have a date type. this is as close as we can get.
+  // dates are weird in sqlite https://orm.drizzle.team/docs/guides/timestamp-default-value
+  date_of_birth: text("date_of_birth").notNull(),
   address: text("address").notNull(),
 
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
@@ -73,7 +76,7 @@ export const insertPatientsSchema = createInsertSchema(patients, {
   last_name: schema => schema.last_name.min(2).max(255),
   email: schema => schema.email.email(),
   phone: schema => schema.phone.min(10).max(10),
-  date_of_birth: schema => schema.date_of_birth,
+  date_of_birth: () => dateStringSchema,
   address: schema => schema.address,
 }).omit({
   id: true,
@@ -88,7 +91,8 @@ export const patchPatientsSchema = insertPatientsSchema.partial();
 export const appointments = sqliteTable("appointments", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
 
-  appointment_date: integer("date_of_birth", { mode: "timestamp" }).notNull(), // sqlite does not have a date type. this is as close as we can get.
+  // e.g. 2022-09-27 18:00:00.000
+  appointment_date: text("date_of_birth").notNull(),
   doctor_id: integer("doctor_id", { mode: "number" }).references(() => doctors.id).notNull(),
   patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id).notNull(),
 
@@ -100,8 +104,12 @@ export const appointments = sqliteTable("appointments", {
 
 export const selectAppointmentsSchema = createSelectSchema(appointments);
 
-// I don't think this one needs any additional validation, just omit the id, createdAt and updatedAt, all others are required
-export const insertAppointmentsSchema = createInsertSchema(appointments).omit({
+// We need to validate that the doctor_id and patient_id exist in the database, but I don't think that can be done purely with zod
+// Think that's a job for the handler to do
+// So type safety alone won't be enough to ensure that the data is correct in this case.
+export const insertAppointmentsSchema = createInsertSchema(appointments, {
+  appointment_date: () => dateStringSchema,
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,

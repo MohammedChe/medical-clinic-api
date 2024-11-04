@@ -32,6 +32,10 @@ export const create = createRoute({
       insertAppointmentsSchema,
       "The created appointment",
     ),
+    // bad request such as in the case of non-existent doctor_id or patient_id
+    [HTTPStatusCodes.BAD_REQUEST]: {
+      description: "Doctor or patient not found",
+    },
     [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertAppointmentsSchema),
       "The validation error(s)",
