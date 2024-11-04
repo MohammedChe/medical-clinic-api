@@ -3,7 +3,7 @@ import * as HTTPStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
-import { insertPatientsSchema, patchPatientsSchema, selectPatientsSchema } from "@/db/schema";
+import { insertPatientsSchema, patchPatientsSchema, selectAppointmentsSchema, selectPatientsSchema } from "@/db/schema";
 import { notFoundSchema } from "@/lib/constants";
 
 const tags = ["patients"];
@@ -113,8 +113,26 @@ export const remove = createRoute({
   },
 });
 
+export const listAppointments = createRoute({
+  tags,
+  path: "/patients/{id}/appointments",
+  method: "get",
+  request: {
+    params: IdParamsSchema,
+  },
+  responses: {
+    [HTTPStatusCodes.OK]: jsonContent(z.array(selectAppointmentsSchema), "The requested appointments"),
+
+    [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(IdParamsSchema),
+      "Invalid ID error",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type ListAppointmentsRoute = typeof listAppointments;

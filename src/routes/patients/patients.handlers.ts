@@ -7,7 +7,7 @@ import type { AppRouteHandler } from "@/lib/types";
 import db from "@/db";
 import { patients } from "@/db/schema";
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./patients.routes";
+import type { CreateRoute, GetOneRoute, ListAppointmentsRoute, ListRoute, PatchRoute, RemoveRoute } from "./patients.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const patients = await db.query.patients.findMany();
@@ -38,6 +38,23 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   }
 
   return c.json(patient, HTTPStatusCodes.OK);
+};
+
+// Type here will actually be the GetOneRoute type for *appointments*
+// We expect an array of appointments to be returned
+export const listAppointments: AppRouteHandler<ListAppointmentsRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+
+  // TODO: Should we check if the patient exists first?
+
+  const appointments = await db.query.appointments.findMany({
+    where(fields, operators) {
+      return operators.eq(fields.patient_id, id);
+    },
+  });
+
+  // Return ok even if it's empty. That's not an error, just no appointments.
+  return c.json(appointments, HTTPStatusCodes.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {

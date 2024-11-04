@@ -58,7 +58,7 @@ export const patients = sqliteTable("patients", {
   email: text("email").unique().notNull(),
   phone: text("phone").unique().notNull(),
   // dates are weird in sqlite https://orm.drizzle.team/docs/guides/timestamp-default-value
-  date_of_birth: text("date_of_birth").notNull(),
+  date_of_birth: integer("date_of_birth").notNull(),
   address: text("address").notNull(),
 
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
@@ -92,7 +92,7 @@ export const appointments = sqliteTable("appointments", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
 
   // e.g. 2022-09-27 18:00:00.000
-  appointment_date: text("date_of_birth").notNull(),
+  appointment_date: integer("date_of_birth").notNull(),
   doctor_id: integer("doctor_id", { mode: "number" }).references(() => doctors.id).notNull(),
   patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id).notNull(),
 
