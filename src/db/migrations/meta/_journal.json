@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1730678086058,
+      "tag": "0000_cuddly_screwball",
+      "breakpoints": true
+    }
+  ]
+}

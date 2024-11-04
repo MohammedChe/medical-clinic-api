@@ -44,3 +44,39 @@ export const insertDoctorsSchema = createInsertSchema(doctors, {
 
 // So this schema is the same as insert, except all fields are optional
 export const patchDoctorsSchema = insertDoctorsSchema.partial();
+
+/// /////////////////// PATIENTS //////////////////////
+
+export const patients = sqliteTable("patients", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  first_name: text("name").notNull(),
+  last_name: text("name").notNull(),
+  email: text("email").unique().notNull(),
+  phone: text("phone").unique().notNull(),
+  date_of_birth: integer("date_of_birth", { mode: "timestamp" }).notNull(), // sqlite does not have a date type. this is as close as we can get.
+  address: text("address").notNull(),
+
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
+    () => new Date(),
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdate(() => new Date()),
+});
+
+export const selectPatientsSchema = createSelectSchema(patients);
+
+export const insertPatientsSchema = createInsertSchema(patients, {
+  first_name: schema => schema.first_name.min(2).max(255),
+  last_name: schema => schema.last_name.min(2).max(255),
+  email: schema => schema.email.email(),
+  phone: schema => schema.phone.min(10).max(10),
+  date_of_birth: schema => schema.date_of_birth,
+  address: schema => schema.address,
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const patchPatientsSchema = insertPatientsSchema.partial();

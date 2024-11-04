@@ -4,6 +4,7 @@ import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
 import doctors from "@/routes/doctors/doctors.index";
 import index from "@/routes/index.route"; // using our nice aliased path
+import patients from "@/routes/patients/patients.index";
 
 // App gets instantiated, adds middlewares
 const app = createApp();
@@ -12,6 +13,7 @@ const app = createApp();
 const routes = [
   index,
   doctors,
+  patients,
 ];
 
 // App gets configured with OpenAPI
