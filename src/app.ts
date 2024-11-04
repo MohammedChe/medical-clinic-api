@@ -2,6 +2,7 @@ import { apiReference } from "@scalar/hono-api-reference";
 
 import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
+import appointments from "@/routes/appointments/appointments.index";
 import doctors from "@/routes/doctors/doctors.index";
 import index from "@/routes/index.route"; // using our nice aliased path
 import patients from "@/routes/patients/patients.index";
@@ -14,6 +15,7 @@ const routes = [
   index,
   doctors,
   patients,
+  appointments,
 ];
 
 // App gets configured with OpenAPI

@@ -2,6 +2,8 @@ import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
+/// ///////////////////// DOCTORS //////////////////////
+
 export const doctors = sqliteTable("doctors", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   first_name: text("name").notNull(),
@@ -45,7 +47,7 @@ export const insertDoctorsSchema = createInsertSchema(doctors, {
 // So this schema is the same as insert, except all fields are optional
 export const patchDoctorsSchema = insertDoctorsSchema.partial();
 
-/// /////////////////// PATIENTS //////////////////////
+/// ///////////////////// PATIENTS //////////////////////
 
 export const patients = sqliteTable("patients", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -80,3 +82,29 @@ export const insertPatientsSchema = createInsertSchema(patients, {
 });
 
 export const patchPatientsSchema = insertPatientsSchema.partial();
+
+/// ///////////////////// APPOINTMENTS //////////////////////
+
+export const appointments = sqliteTable("appointments", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+
+  appointment_date: integer("date_of_birth", { mode: "timestamp" }).notNull(), // sqlite does not have a date type. this is as close as we can get.
+  doctor_id: integer("doctor_id", { mode: "number" }).references(() => doctors.id).notNull(),
+  patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id).notNull(),
+
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdate(() => new Date()),
+});
+
+export const selectAppointmentsSchema = createSelectSchema(appointments);
+
+// I don't think this one needs any additional validation, just omit the id, createdAt and updatedAt, all others are required
+export const insertAppointmentsSchema = createInsertSchema(appointments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const patchAppointmentsSchema = insertAppointmentsSchema.partial();
