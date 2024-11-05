@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
@@ -116,3 +116,31 @@ export const insertAppointmentsSchema = createInsertSchema(appointments, {
 });
 
 export const patchAppointmentsSchema = insertAppointmentsSchema.partial();
+
+/// /////////// Setup relations //////////////
+
+// one patient as many appointments
+export const patientAppointments = relations(patients, ({ many }) => ({
+  appointments: many(appointments),
+}));
+
+// but each appointment has only one patient
+export const appointmentPatient = relations(appointments, ({ one }) => ({
+  patient: one(patients, {
+    fields: [appointments.patient_id],
+    references: [patients.id],
+  }),
+}));
+
+// one doctor as many appointments
+export const doctorAppointments = relations(doctors, ({ many }) => ({
+  appointments: many(appointments),
+}));
+
+// but each appointment has only one doctor
+export const appointmentDoctor = relations(appointments, ({ one }) => ({
+  doctor: one(doctors, {
+    fields: [appointments.doctor_id],
+    references: [doctors.id],
+  }),
+}));

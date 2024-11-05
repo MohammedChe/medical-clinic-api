@@ -10,7 +10,11 @@ import { doctors } from "@/db/schema";
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./doctors.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const doctors = await db.query.doctors.findMany();
+  const doctors = await db.query.doctors.findMany({
+    with: {
+      appointments: true,
+    },
+  });
 
   return c.json(doctors);
 };
