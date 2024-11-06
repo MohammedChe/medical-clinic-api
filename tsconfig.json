@@ -18,6 +18,8 @@
     "skipLibCheck": true
   },
   "tsc-alias": {
+    // Adds import extensions to the paths
+    // And resolves the full paths instead of aliases
     "resolveFullPaths": true
   }
 }

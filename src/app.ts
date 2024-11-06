@@ -1,4 +1,3 @@
-import { bearerAuth } from "hono/bearer-auth";
 import { except } from "hono/combine";
 import { jwt } from "hono/jwt";
 

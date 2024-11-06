@@ -4,7 +4,9 @@ import { apiReference } from "@scalar/hono-api-reference";
 // This was originally only in create-app
 import type { AppOpenAPI } from "./types";
 
-import packageJSON from "../../package.json";
+// https://stackoverflow.com/questions/70106880/err-import-assertion-type-missing-for-import-of-json-file
+// Added to resolve ERR_IMPORT_ASSERTION_TYPE_MISSING error when trying to run built app
+import packageJSON from "../../package.json" with {type: "json"};
 
 // We want to reuse it, so we've moved it to types.ts
 export default function configureOpenAPI(app: AppOpenAPI) {
