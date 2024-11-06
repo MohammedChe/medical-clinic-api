@@ -1,4 +1,5 @@
-import { apiReference } from "@scalar/hono-api-reference";
+import { bearerAuth } from "hono/bearer-auth";
+import { except } from "hono/combine";
 
 import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
@@ -9,6 +10,16 @@ import patients from "@/routes/patients/patients.index";
 
 // App gets instantiated, adds middlewares
 const app = createApp();
+
+const token = "secret";
+
+// All routes are protected except for GET /doctors and GET /patients
+
+// `except` can accept strings or a function returning a boolean.
+// if true, middleware will be skipped
+app.use("/*", except((c) => {
+  return (c.req.method === "GET" && (c.req.path === "/doctors" || c.req.path === "/patients"));
+}, bearerAuth({ token })));
 
 // An array defining all of the routes in our app
 const routes = [

@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
   DATABASE_URL: z.string().url(),
   DATABASE_AUTH_TOKEN: z.string().optional(),
+  JWT_SECRET: z.string(),
 }).superRefine((input, ctx) => {
   // can use refine/superRefine to add additional validation not covered by zod
   // superRefine is just a more powerful version of refine

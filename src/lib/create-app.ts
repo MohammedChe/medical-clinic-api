@@ -1,8 +1,11 @@
+import type { JwtVariables } from "hono/jwt";
+
 import { OpenAPIHono } from "@hono/zod-openapi";
-import env from "@/env";
 import { pinoLogger } from "hono-pino";
 import pino from "pino";
 import pretty from "pino-pretty";
+
+import env from "@/env";
 
 // Stoker provides some useful middlewares, like notFound
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";

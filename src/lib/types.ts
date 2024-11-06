@@ -5,11 +5,15 @@
 
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 import type { PinoLogger } from "hono-pino";
+import type { JwtVariables } from "hono/jwt";
+
+type Variables = JwtVariables;
 
 // Means we get type completions when we try to access the logger
 export interface AppBindings {
   Variables: {
     logger: PinoLogger;
+    jwt: Variables;
   };
 }
 
