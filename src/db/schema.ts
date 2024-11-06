@@ -117,6 +117,37 @@ export const insertAppointmentsSchema = createInsertSchema(appointments, {
 
 export const patchAppointmentsSchema = insertAppointmentsSchema.partial();
 
+/// ///////////////////// USERS //////////////////////
+
+export const users = sqliteTable("users", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  first_name: text("name").notNull(),
+  last_name: text("name").notNull(),
+  email: text("email").unique().notNull(),
+  password: text('password').notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
+    () => new Date(),
+  ),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdate(() => new Date()),
+});
+
+
+export const insertUsersSchema = createInsertSchema(users, {
+  first_name: schema => schema.first_name.min(2).max(255),
+  last_name: schema => schema.last_name.min(2).max(255),
+  email: schema => schema.email.email(),
+  password: schema => schema.password.min(8).max(255)
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const selectUsersSchema = createSelectSchema(users);
+
+
 /// /////////// Setup relations //////////////
 
 // one patient as many appointments

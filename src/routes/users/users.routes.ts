@@ -5,19 +5,24 @@ import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/opena
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 import { ZodUnion } from "zod";
 
-import { insertDoctorsSchema, insertPatientsSchema, selectPatientsSchema } from "@/db/schema";
+
+import { insertDoctorsSchema, insertPatientsSchema, insertUsersSchema, selectPatientsSchema } from "@/db/schema";
 
 const tags = ["authentication"];
 
 // Registering as either a patient or a doctor
 
-const LoginSchema = z.object({});
+export const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string()
+});
 
 export const login = createRoute({
   tags,
   path: "/login",
   method: "post",
   request: {
+    // Not using the schema generated from drizzle/zod this time. Only email/pw needed.
     body: jsonContentRequired(
       LoginSchema,
       "The login details",
@@ -25,20 +30,21 @@ export const login = createRoute({
   },
   responses: {
     [HTTPStatusCodes.OK]: jsonContent(
-      selectPatientsSchema,
+      z.object({
+        token: z.string()
+      }),
       "JSON Web Token",
     ),
-
-    [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(IdParamsSchema),
-      "The validation error(s)",
-    ),
+    [HTTPStatusCodes.UNAUTHORIZED]: jsonContent(
+      z.object({
+        msg: z.string()
+      }),
+      "Unauthorised"
+    )
   },
 });
 
-// we need a register schema which will accept the properties of a doctor or a patient
-// this endpoint should accept a body that can be validated against either of these schemas
-const RegisterSchema = z.union([insertDoctorsSchema, insertPatientsSchema]);
+
 
 export const register = createRoute({
   tags,
@@ -46,7 +52,7 @@ export const register = createRoute({
   method: "post",
   request: {
     body: jsonContentRequired(
-      RegisterSchema,
+      insertUsersSchema,
       "The registration details",
     ),
   },
@@ -54,8 +60,7 @@ export const register = createRoute({
     [HTTPStatusCodes.OK]: jsonContent(
       selectPatientsSchema,
       "The registered user",
-    ),
-
+    ),    
     [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
       "The validation error(s)",

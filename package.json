@@ -14,6 +14,7 @@
     "@hono/zod-openapi": "^0.16.4",
     "@libsql/client": "^0.14.0",
     "@scalar/hono-api-reference": "^0.5.158",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
     "drizzle-orm": "^0.36.0",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.2",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.17",
     "drizzle-kit": "^0.27.1",
     "eslint": "^9.11.1",
