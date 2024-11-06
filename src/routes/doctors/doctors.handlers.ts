@@ -91,30 +91,3 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
 
   return c.body(null, HTTPStatusCodes.NO_CONTENT);
 };
-
-// Auth-related handlers
-// export const login: AppRouteHandler = async (c) => {
-//   // This is a dummy login handler
-//   // It doesn't do anything, but it could be used to generate a token
-//   // and return it to the user
-//   return c.json({ token: "secret" });
-// };
-
-// export const logout: AppRouteHandler = async (c) => {
-//   // This is a dummy logout handler
-//   // It doesn't do anything, but it could be used to invalidate a token
-//   return c.json({ message: "Logged out" });
-// };
-
-// export const me: AppRouteHandler = async (c) => {
-//   // This is a dummy me handler
-//   // It doesn't do anything, but it could be used to return information about the user
-//   return c.json({ user
-//   });
-// }
-
-// export const register: AppRouteHandler = async (c) => {
-//   // This is a dummy register handler
-//   // It doesn't do anything, but it could be used to create a new user
-//   return c.json({ message: "User created" });
-// };

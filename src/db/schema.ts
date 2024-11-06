@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
@@ -121,10 +121,10 @@ export const patchAppointmentsSchema = insertAppointmentsSchema.partial();
 
 export const users = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  first_name: text("name").notNull(),
-  last_name: text("name").notNull(),
+  first_name: text("first name").notNull(),
+  last_name: text("last name").notNull(),
   email: text("email").unique().notNull(),
-  password: text('password').notNull(),
+  password: text("password").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
     () => new Date(),
   ),
@@ -133,12 +133,11 @@ export const users = sqliteTable("users", {
     .$onUpdate(() => new Date()),
 });
 
-
 export const insertUsersSchema = createInsertSchema(users, {
   first_name: schema => schema.first_name.min(2).max(255),
   last_name: schema => schema.last_name.min(2).max(255),
   email: schema => schema.email.email(),
-  password: schema => schema.password.min(8).max(255)
+  password: schema => schema.password.min(8).max(255),
 }).omit({
   id: true,
   createdAt: true,
@@ -146,7 +145,6 @@ export const insertUsersSchema = createInsertSchema(users, {
 });
 
 export const selectUsersSchema = createSelectSchema(users);
-
 
 /// /////////// Setup relations //////////////
 

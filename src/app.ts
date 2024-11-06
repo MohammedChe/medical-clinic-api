@@ -1,25 +1,39 @@
 import { bearerAuth } from "hono/bearer-auth";
 import { except } from "hono/combine";
+import { jwt } from "hono/jwt";
 
+import env from "@/env";
 import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
 import appointments from "@/routes/appointments/appointments.index";
 import doctors from "@/routes/doctors/doctors.index";
 import index from "@/routes/index.route"; // using our nice aliased path
 import patients from "@/routes/patients/patients.index";
+import users from "@/routes/users/users.index";
 
 // App gets instantiated, adds middlewares
 const app = createApp();
 
-const token = "secret";
-
 // All routes are protected except for GET /doctors and GET /patients
+// We obviously can't restrict access to the login and registration routes either
+const authExceptions = [
+  { path: "/login", method: "POST" },
+  { path: "/register", method: "POST" },
+  { path: "/doctors", method: "GET" },
+  { path: "/patients", method: "GET" },
+  { path: "/reference", method: "GET" },
+  { path: "/doc", method: "GET" },
+  { path: "/", method: "GET" },
+];
 
 // `except` can accept strings or a function returning a boolean.
 // if true, middleware will be skipped
 app.use("/*", except((c) => {
-  return (c.req.method === "GET" && (c.req.path === "/doctors" || c.req.path === "/patients"));
-}, bearerAuth({ token })));
+  const { path, method } = c.req;
+  // array.some works where array.includes would not
+  // because we're comparing objects, not strings
+  return (authExceptions.some(e => e.path === path && e.method === method));
+}, jwt({ secret: env.JWT_SECRET })));
 
 // An array defining all of the routes in our app
 const routes = [
@@ -27,6 +41,7 @@ const routes = [
   doctors,
   patients,
   appointments,
+  users,
 ];
 
 // App gets configured with OpenAPI

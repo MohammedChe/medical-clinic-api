@@ -1,5 +1,4 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { jwt } from "hono/jwt";
 import * as HTTPStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";

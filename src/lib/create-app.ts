@@ -1,5 +1,3 @@
-import type { JwtVariables } from "hono/jwt";
-
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { pinoLogger } from "hono-pino";
 import pino from "pino";

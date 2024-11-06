@@ -1,12 +1,9 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { jwt } from "hono/jwt";
 import * as HTTPStatusCodes from "stoker/http-status-codes";
-import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
+import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
-import { ZodUnion } from "zod";
 
-
-import { insertDoctorsSchema, insertPatientsSchema, insertUsersSchema, selectPatientsSchema } from "@/db/schema";
+import { insertUsersSchema, selectUsersSchema } from "@/db/schema";
 
 const tags = ["authentication"];
 
@@ -14,7 +11,7 @@ const tags = ["authentication"];
 
 export const LoginSchema = z.object({
   email: z.string().email(),
-  password: z.string()
+  password: z.string(),
 });
 
 export const login = createRoute({
@@ -31,20 +28,18 @@ export const login = createRoute({
   responses: {
     [HTTPStatusCodes.OK]: jsonContent(
       z.object({
-        token: z.string()
+        token: z.string(),
       }),
       "JSON Web Token",
     ),
     [HTTPStatusCodes.UNAUTHORIZED]: jsonContent(
       z.object({
-        msg: z.string()
+        msg: z.string(),
       }),
-      "Unauthorised"
-    )
+      "Unauthorised",
+    ),
   },
 });
-
-
 
 export const register = createRoute({
   tags,
@@ -58,9 +53,9 @@ export const register = createRoute({
   },
   responses: {
     [HTTPStatusCodes.OK]: jsonContent(
-      selectPatientsSchema,
+      selectUsersSchema,
       "The registered user",
-    ),    
+    ),
     [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
       "The validation error(s)",

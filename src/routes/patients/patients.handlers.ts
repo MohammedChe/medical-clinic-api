@@ -13,7 +13,7 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
   const patients = await db.query.patients.findMany({
     with: {
       appointments: true,
-    }
+    },
   });
 
   return c.json(patients);
