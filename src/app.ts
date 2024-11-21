@@ -11,7 +11,7 @@ import index from "@/routes/index.route"; // using our nice aliased path
 import patients from "@/routes/patients/patients.index";
 import prescriptions from "@/routes/prescriptions/prescriptions.index";
 import users from "@/routes/users/users.index";
-
+import {cors} from 'hono/cors'
 // App gets instantiated, adds middlewares
 const app = createApp();
 
@@ -26,6 +26,14 @@ const authExceptions = [
   { path: "/doc", method: "GET" },
   { path: "/", method: "GET" },
 ];
+
+app.use(cors({
+  origin: '*',
+  allowHeaders: ['*'],
+  allowMethods: ['*'],
+  exposeHeaders: ['*'],
+  maxAge: 600,
+}))
 
 // `except` can accept strings or a function returning a boolean.
 // if true, middleware will be skipped
