@@ -93,8 +93,8 @@ export const appointments = sqliteTable("appointments", {
 
   // e.g. 2022-09-27 18:00:00.000
   appointment_date: integer("date_of_birth").notNull(),
-  doctor_id: integer("doctor_id", { mode: "number" }).references(() => doctors.id).notNull(),
-  patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id).notNull(),
+  doctor_id: integer("doctor_id", { mode: "number" }).references(() => doctors.id, {onDelete: 'cascade'}).notNull(),
+  patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id, {onDelete: 'cascade'}).notNull(),
 
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" })
@@ -211,7 +211,7 @@ export const patientAppointments = relations(patients, ({ many }) => ({
 export const appointmentPatient = relations(appointments, ({ one }) => ({
   patient: one(patients, {
     fields: [appointments.patient_id],
-    references: [patients.id],
+    references: [patients.id], 
   }),
 }));
 
