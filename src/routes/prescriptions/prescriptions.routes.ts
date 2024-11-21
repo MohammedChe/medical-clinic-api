@@ -3,7 +3,7 @@ import * as HTTPStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
-import { insertPrescriptionsSchema, patchAppointmentsSchema, selectPrescriptionsSchema } from "@/db/schema";
+import { insertPrescriptionsSchema, patchPrescriptionsSchema, selectPrescriptionsSchema } from "@/db/schema";
 import { notFoundSchema } from "@/lib/constants";
 
 const tags = ["prescriptions"];
@@ -73,7 +73,7 @@ export const patch = createRoute({
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
-      patchAppointmentsSchema,
+      patchPrescriptionsSchema,
       "The prescription updates to apply",
     ),
   },
@@ -83,7 +83,7 @@ export const patch = createRoute({
       "The updated prescription",
     ),
     [HTTPStatusCodes.UNPROCESSABLE_ENTITY]: jsonContentOneOf([
-      createErrorSchema(patchAppointmentsSchema),
+      createErrorSchema(patchPrescriptionsSchema),
       createErrorSchema(IdParamsSchema),
     ], "The validation error(s)"),
     [HTTPStatusCodes.NOT_FOUND]: jsonContent(
