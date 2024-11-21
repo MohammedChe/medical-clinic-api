@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1730678086058,
-      "tag": "0000_cuddly_screwball",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1730753357183,
-      "tag": "0001_nifty_lila_cheney",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1730757108138,
-      "tag": "0002_concerned_amphibian",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1730760702881,
-      "tag": "0003_sharp_wild_pack",
+      "when": 1732152219906,
+      "tag": "0000_lethal_lord_hawal",
       "breakpoints": true
     }
   ]

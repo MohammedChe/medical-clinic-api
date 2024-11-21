@@ -8,8 +8,8 @@ import { dateStringSchema } from "@/lib/date-string-schema";
 
 export const doctors = sqliteTable("doctors", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  first_name: text("name").notNull(),
-  last_name: text("name").notNull(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
   email: text("email").unique().notNull(),
   phone: text("phone").unique().notNull(),
   specialisation: text({
@@ -53,8 +53,8 @@ export const patchDoctorsSchema = insertDoctorsSchema.partial();
 
 export const patients = sqliteTable("patients", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  first_name: text("name").notNull(),
-  last_name: text("name").notNull(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
   email: text("email").unique().notNull(),
   phone: text("phone").unique().notNull(),
   // dates are weird in sqlite https://orm.drizzle.team/docs/guides/timestamp-default-value
@@ -121,8 +121,8 @@ export const patchAppointmentsSchema = insertAppointmentsSchema.partial();
 
 export const users = sqliteTable("users", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  first_name: text("first name").notNull(),
-  last_name: text("last name").notNull(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
   email: text("email").unique().notNull(),
   password: text("password").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
@@ -146,6 +146,60 @@ export const insertUsersSchema = createInsertSchema(users, {
 
 export const selectUsersSchema = createSelectSchema(users);
 
+/// ///////////////////// MEDICAL HISTORY //////////////////////
+
+// By this we mean medical conditions a patient has been diagnosed with
+// I don't think this necessarily needs to relate to a doctor. A patient could have been diagnosed by a different clinic.
+export const diagnoses = sqliteTable("diagnoses", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id).notNull(),
+  condition: text("condition").notNull(), // Name of the medical condition (students may use an additonal API to details of the condition)
+  diagnosis_date: integer("diagnosis_date").notNull(), // Date of diagnosis
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+});
+
+export const selectDiagnosisSchema = createSelectSchema(diagnoses);
+
+export const insertDiagnosisSchema = createInsertSchema(diagnoses, {
+  diagnosis_date: () => dateStringSchema,
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const patchDiagnosisSchema = insertDiagnosisSchema.partial();
+
+/// ///////////////////// PRESCRIPTIONS //////////////////////
+
+// A medical conditon will relate to a prescription (patient has been prescribed medication for a condition)
+export const prescriptions = sqliteTable("prescriptions", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  patient_id: integer("patient_id", { mode: "number" }).references(() => patients.id).notNull(),
+  doctor_id: integer("doctor_id", { mode: "number" }).references(() => doctors.id).notNull(), // Prescription given by doctor
+  diagnosis_id: integer("diagnosis_id", { mode: "number" }).references(() => diagnoses.id).notNull(), // Link to diagnosis
+  medication: text("medication").notNull(), // Name of the medication
+  dosage: text("dosage").notNull(), // Dosage instructions e.g take after meals
+  start_date: integer("start_date").notNull(), // Start date of the prescription
+  end_date: integer("end_date").notNull(), // End date of the prescription
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+});
+
+export const selectPrescriptionsSchema = createSelectSchema(prescriptions);
+
+export const insertPrescriptionsSchema = createInsertSchema(prescriptions, {
+  start_date: () => dateStringSchema,
+  end_date: () => dateStringSchema,
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const patchPrescriptionsSchema = insertPrescriptionsSchema.partial();
+
 /// /////////// Setup relations //////////////
 
 // one patient as many appointments
@@ -161,7 +215,7 @@ export const appointmentPatient = relations(appointments, ({ one }) => ({
   }),
 }));
 
-// one doctor as many appointments
+// one doctor has many appointments
 export const doctorAppointments = relations(doctors, ({ many }) => ({
   appointments: many(appointments),
 }));
@@ -170,6 +224,49 @@ export const doctorAppointments = relations(doctors, ({ many }) => ({
 export const appointmentDoctor = relations(appointments, ({ one }) => ({
   doctor: one(doctors, {
     fields: [appointments.doctor_id],
+    references: [doctors.id],
+  }),
+}));
+
+/// /////////////// Diagnosis - Patient relations //////////////////
+
+// one patient has many diagnoses
+export const patientDiagnosis = relations(patients, ({ many }) => ({
+  diagnosis: many(diagnoses),
+}));
+
+// but each diagnosis has only one patient
+export const diagnosisPatient = relations(diagnoses, ({ one }) => ({
+  patient: one(patients, {
+    fields: [diagnoses.patient_id],
+    references: [patients.id],
+  }),
+}));
+
+/// /////////////// Prescription - Doctor/Patient relations //////////////////
+
+// one patient has many prescriptions
+export const patientPrescriptions = relations(patients, ({ many }) => ({
+  prescriptions: many(prescriptions),
+}));
+
+// but each prescription has only one patient
+export const prescriptionPatient = relations(prescriptions, ({ one }) => ({
+  patient: one(patients, {
+    fields: [prescriptions.patient_id],
+    references: [patients.id],
+  }),
+}));
+
+// one doctor has many prescriptions
+export const doctorPrescriptions = relations(doctors, ({ many }) => ({
+  prescriptions: many(prescriptions),
+}));
+
+// but each prescription has only one doctor
+export const prescriptionDoctor = relations(prescriptions, ({ one }) => ({
+  doctor: one(doctors, {
+    fields: [prescriptions.doctor_id],
     references: [doctors.id],
   }),
 }));

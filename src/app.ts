@@ -5,9 +5,11 @@ import env from "@/env";
 import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
 import appointments from "@/routes/appointments/appointments.index";
+import diagnoses from "@/routes/diagnoses/diagnoses.index";
 import doctors from "@/routes/doctors/doctors.index";
 import index from "@/routes/index.route"; // using our nice aliased path
 import patients from "@/routes/patients/patients.index";
+import prescriptions from "@/routes/prescriptions/prescriptions.index";
 import users from "@/routes/users/users.index";
 
 // App gets instantiated, adds middlewares
@@ -41,6 +43,8 @@ const routes = [
   patients,
   appointments,
   users,
+  diagnoses,
+  prescriptions,
 ];
 
 // App gets configured with OpenAPI
