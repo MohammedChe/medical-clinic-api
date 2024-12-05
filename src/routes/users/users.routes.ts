@@ -29,8 +29,11 @@ export const login = createRoute({
     [HTTPStatusCodes.OK]: jsonContent(
       z.object({
         token: z.string(),
+        first_name: z.string(),
+        last_name: z.string(),
+        email: z.string().email(),      
       }),
-      "JSON Web Token",
+      "JSON Web Token and user data",
     ),
     [HTTPStatusCodes.UNAUTHORIZED]: jsonContent(
       z.object({
