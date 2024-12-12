@@ -70,13 +70,23 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id } = c.req.valid("param");
 
-  // Not using returning here, because there will be no rows to return
-  const result = await db.delete(diagnoses)
-    .where(eq(diagnoses.id, id));
+  try {
 
-  if (result.rowsAffected === 0) {
-    return c.json({ message: HTTPStatusPhrases.NOT_FOUND }, HTTPStatusCodes.NOT_FOUND);
+    // Not using returning here, because there will be no rows to return
+    const result = await db.delete(diagnoses)
+      .where(eq(diagnoses.id, id));
+
+    if (result.rowsAffected === 0) {
+      return c.json({ message: HTTPStatusPhrases.NOT_FOUND }, HTTPStatusCodes.NOT_FOUND);
+    }
+
+    return c.body(null, HTTPStatusCodes.NO_CONTENT);
   }
-
-  return c.body(null, HTTPStatusCodes.NO_CONTENT);
+  catch (error) {
+    if ((error as any).code === 'SQLITE_CONSTRAINT') {
+      return c.json({ message: "Cannot delete a diagnosis with existing prescriptions" }, HTTPStatusCodes.CONFLICT);
+    } else {
+      return c.json({ message: "An unexpected error occurred" }, HTTPStatusCodes.INTERNAL_SERVER_ERROR);
+    }
+  }
 };

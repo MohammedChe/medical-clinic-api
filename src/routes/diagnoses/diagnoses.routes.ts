@@ -4,7 +4,7 @@ import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/opena
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
 import { insertDiagnosisSchema, patchDiagnosisSchema, selectDiagnosisSchema } from "@/db/schema";
-import { notFoundSchema } from "@/lib/constants";
+import { notFoundSchema, conflictSchema } from "@/lib/constants";
 
 const tags = ["diagnoses"];
 
@@ -112,6 +112,10 @@ export const remove = createRoute({
       notFoundSchema,
       "Diagnosis not found",
     ),
+    [HTTPStatusCodes.CONFLICT]: jsonContent(
+      conflictSchema,
+      "Diagnosis has dependencies, cannot delete a diagnosis which references existing prescriptions.",
+    )
   },
 });
 

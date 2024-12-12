@@ -50,7 +50,7 @@ export const getOne = createRoute({
   tags,
   path: "/doctors/{id}",
   method: "get",
-  
+
   request: {
     // This can be done manually, ensuring ID is passed etc
     // But it's repetitive, so stoker provides a helper to create this schema for us
@@ -130,6 +130,11 @@ export const remove = createRoute({
       notFoundSchema,
       "Doctor not found",
     ),
+    [
+      HTTPStatusCodes.CONFLICT]: {
+      description: "Doctor delete a doctor with existing appointments or prescriptions",
+    }
+
   },
 });
 

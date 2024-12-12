@@ -10,6 +10,10 @@ export const unauthorizedSchema = createMessageObjectSchema(
   HTTPStatusPhrases.UNAUTHORIZED,
 );
 
+export const conflictSchema = createMessageObjectSchema(
+  HTTPStatusPhrases.CONFLICT,
+);
+
 // Using these to extend fakerJS
 // Source: https://www.health.harvard.edu/health-a-to-z
 export const commonDiseasesWithMedications = [

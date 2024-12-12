@@ -4,7 +4,7 @@ import { jsonContent, jsonContentOneOf, jsonContentRequired } from "stoker/opena
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
 import { insertPatientsSchema, patchPatientsSchema, selectAppointmentsSchema, selectPatientsSchema } from "@/db/schema";
-import { notFoundSchema } from "@/lib/constants";
+import { conflictSchema, notFoundSchema } from "@/lib/constants";
 
 const tags = ["patients"];
 
@@ -109,6 +109,10 @@ export const remove = createRoute({
     [HTTPStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
       "Patient not found",
+    ),
+    [HTTPStatusCodes.CONFLICT]: jsonContent(
+      conflictSchema,
+      "Patient has active prescriptions, diagnoses, or appointments",
     ),
   },
 });
