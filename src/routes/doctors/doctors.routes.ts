@@ -132,7 +132,7 @@ export const remove = createRoute({
     ),
     [
       HTTPStatusCodes.CONFLICT]: {
-      description: "Doctor delete a doctor with existing appointments or prescriptions",
+      description: "Cannot delete a doctor with existing appointments or prescriptions",
     }
 
   },
