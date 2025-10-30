@@ -14,16 +14,16 @@ export default function configureOpenAPI(app: AppOpenAPI) {
   app.doc("/doc", {
     openapi: "3.0.0",
     info: {
-      title: "My API",
+      title: "Medical Clinic API",
       version: packageJSON.version, // Nice - we can use the version from package.json instead of hardcoding it
-      description: "Medical Clinic API",
+      description: "CA2 medical clinic API for managing patients, appointments, and medical records.",
     },
   });
 
   // This one is visual documentation
-  app.get("/reference", apiReference({
-    theme: "kepler",
-    layout: "classic",
+  app.get("/docs", apiReference({
+    theme: "elysiajs",
+    layout: "modern",
     // Tell the API reference to use axios/js for the client, examples will follow axios/js
     defaultHttpClient: {
       targetKey: "js",

@@ -22,7 +22,7 @@ const authExceptions = [
   { path: "/register", method: "POST" },
   { path: "/doctors", method: "GET" },
   { path: "/patients", method: "GET" },
-  { path: "/reference", method: "GET" },
+  { path: "/docs", method: "GET" },
   { path: "/doc", method: "GET" },
   { path: "/", method: "GET" },
 ];
