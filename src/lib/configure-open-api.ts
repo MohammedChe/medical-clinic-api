@@ -26,7 +26,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     layout: "classic",
     // Tell the API reference to use axios/js for the client, examples will follow axios/js
     defaultHttpClient: {
-      targetKey: "javascript",
+      targetKey: "js",
       clientKey: "axios",
     },
     spec: {
