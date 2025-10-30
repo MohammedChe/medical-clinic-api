@@ -35,6 +35,19 @@ export const login: AppRouteHandler<LoginRoute> = async (c) => {
   }, HTTPStatusCodes.OK);
 };
 
+// export const register: AppRouteHandler<RegisterRoute> = async (c) => {
+//   const user = c.req.valid("json");
+
+//   const hashedPassword = await bcrypt.hash(user.password, 10);
+
+//   const [inserted] = await db.insert(users).values({
+//     ...user,
+//     password: hashedPassword,
+//   }).returning();
+
+//   return c.json(inserted, HTTPStatusCodes.OK);
+// };
+
 export const register: AppRouteHandler<RegisterRoute> = async (c) => {
   const user = c.req.valid("json");
 
@@ -45,5 +58,13 @@ export const register: AppRouteHandler<RegisterRoute> = async (c) => {
     password: hashedPassword,
   }).returning();
 
-  return c.json(inserted, HTTPStatusCodes.OK);
+  let token = await sign({ id: inserted.id, email: inserted.email }, env.JWT_SECRET);
+
+  let userResponse: any = {
+    token,
+    ...inserted,
+  };
+  userResponse.password = undefined;
+
+  return c.json(userResponse, HTTPStatusCodes.OK);
 };
