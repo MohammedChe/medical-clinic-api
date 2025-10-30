@@ -9,6 +9,7 @@ import { users } from "@/db/schema";
 import env from "@/env";
 
 import type { LoginRoute, RegisterRoute } from "./users.routes";
+import { tr } from "@faker-js/faker";
 
 export const login: AppRouteHandler<LoginRoute> = async (c) => {
   const { email, password } = c.req.valid("json");
@@ -35,30 +36,18 @@ export const login: AppRouteHandler<LoginRoute> = async (c) => {
   }, HTTPStatusCodes.OK);
 };
 
-// export const register: AppRouteHandler<RegisterRoute> = async (c) => {
-//   const user = c.req.valid("json");
-
-//   const hashedPassword = await bcrypt.hash(user.password, 10);
-
-//   const [inserted] = await db.insert(users).values({
-//     ...user,
-//     password: hashedPassword,
-//   }).returning();
-
-//   return c.json(inserted, HTTPStatusCodes.OK);
-// };
-
 export const register: AppRouteHandler<RegisterRoute> = async (c) => {
   const user = c.req.valid("json");
 
   const hashedPassword = await bcrypt.hash(user.password, 10);
 
-  const [inserted] = await db.insert(users).values({
-    ...user,
-    password: hashedPassword,
-  }).returning();
+  try {
+    const [inserted] = await db.insert(users).values({
+      ...user,
+      password: hashedPassword,
+    }).returning();
 
-  let token = await sign({ id: inserted.id, email: inserted.email }, env.JWT_SECRET);
+     let token = await sign({ id: inserted.id, email: inserted.email }, env.JWT_SECRET);
 
   let userResponse: any = {
     token,
@@ -67,4 +56,14 @@ export const register: AppRouteHandler<RegisterRoute> = async (c) => {
   userResponse.password = undefined;
 
   return c.json(userResponse, HTTPStatusCodes.OK);
+  
+  } catch (error) {
+    if ((error as any).code === 'SQLITE_CONSTRAINT') {
+      return c.json({ message: "User already exists" }, HTTPStatusCodes.CONFLICT);
+    } else {
+      return c.json({ message: "An unexpected error occurred" }, HTTPStatusCodes.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+ 
 };

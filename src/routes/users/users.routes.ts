@@ -63,6 +63,18 @@ export const register = createRoute({
       createErrorSchema(IdParamsSchema),
       "The validation error(s)",
     ),
+    [HTTPStatusCodes.CONFLICT]: jsonContent(
+      z.object({
+        message: z.string(),
+      }),
+      "Conflict",
+    ),
+    [HTTPStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      z.object({
+        message: z.string(),
+      }),
+      "Internal Server Error",
+    ),
   },
 });
 
