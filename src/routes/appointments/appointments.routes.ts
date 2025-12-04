@@ -68,7 +68,7 @@ export const getOne = createRoute({
 
 export const patch = createRoute({
   tags,
-  path: "/appointment/{id}",
+  path: "/appointments/{id}",
   method: "patch",
   request: {
     params: IdParamsSchema,
